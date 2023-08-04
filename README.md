@@ -48,6 +48,12 @@ To start the chat application using an existing dataset, use the `chat` subcomma
 python src/main.py chat --repo-name <repo_name>
 ```
 
+You can load multiple repositories by specifying multiple repo names comma separated:
+
+```bash
+python src/main.py chat --repo-name <repo_name>,<repo_name2>,<repo_name3>
+```
+
 The Streamlit chat app will run, and you can interact with the chatbot at `http://localhost:8501` (or the next available port) to ask questions about the repository.
 
 ## License
