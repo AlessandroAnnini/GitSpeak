@@ -6,9 +6,6 @@ from faiss_utils import get_store, search_db
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-# anchor tag to https://github.com/AlessandroAnnini/GitSpeak called GitSpeak
-# <a href="https://github.com/AlessandroAnnini/GitSpeak" target="_blank" alt="GitSpeak">GitSpeak</a>
-
 
 def run_chat_app(folder):
     arguments = folder.split(",")
