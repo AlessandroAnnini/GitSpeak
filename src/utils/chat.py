@@ -11,7 +11,10 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
 def run_chat_app(folder):
-    st.title(f"{os.path.basename(folder)} GPT")
+    arguments = folder.split(",")
+    arguments = " + ".join(arguments)
+
+    st.title(f"{arguments} GPT")
     st.caption(
         """<a
             href="https://github.com/AlessandroAnnini/GitSpeak"
@@ -35,8 +38,6 @@ def run_chat_app(folder):
             st.markdown(message["content"])
 
     # Accept user input
-    arguments = folder.split(",")
-    arguments = " + ".join(arguments)
     if prompt := st.chat_input(f"Ask me all about {arguments}"):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
