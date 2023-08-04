@@ -4,7 +4,7 @@ import pathspec
 import subprocess
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
-from utils.faiss_utils import get_db
+from utils.faiss_utils import create_store
 
 # Set the OpenAI API key
 openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -81,4 +81,4 @@ def process(repo_url, include_file_extensions, repo_name):
     docs = split_docs(docs)
     print(f"Split into {len(docs)} chunks")
 
-    get_db(repo_name, docs)
+    create_store(repo_name, docs)

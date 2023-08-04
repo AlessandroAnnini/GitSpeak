@@ -2,7 +2,7 @@ import os
 import argparse
 import openai
 import streamlit as st
-from faiss_utils import get_db, search_db
+from faiss_utils import get_store, search_db
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -23,7 +23,7 @@ def run_chat_app(folder):
         unsafe_allow_html=True,
     )
 
-    db = get_db(folder)
+    db = get_store(folder)
 
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -35,7 +35,9 @@ def run_chat_app(folder):
             st.markdown(message["content"])
 
     # Accept user input
-    if prompt := st.chat_input(f"Ask me all about {os.path.basename(folder)}"):
+    arguments = folder.split(",")
+    arguments = " + ".join(arguments)
+    if prompt := st.chat_input(f"Ask me all about {arguments}"):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         # Display user message in chat message container

@@ -78,7 +78,7 @@ def main():
     chat_parser.add_argument(
         "--repo-name",
         required=True,
-        help="The name of one of your existing repositories",
+        help="One or more comma-separated already processed repository names to chat with",
     )
 
     ########################################

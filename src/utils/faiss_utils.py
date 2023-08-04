@@ -36,20 +36,43 @@ def github_url_to_folder_name(url, separator="_"):
         raise ValueError("Invalid GitHub URL.")
 
 
-def get_db(repo_name, docs=None):
+def create_store(repo_name, docs):
     embeddings = OpenAIEmbeddings()
 
     db_path = f"faiss_index/{repo_name}"
 
-    # if no db exists on the path, create one
-    if not os.path.exists(db_path):
-        # create db
-        db = FAISS.from_documents(docs, embeddings)
-        # save db
-        db.save_local(db_path)
-    else:
-        # load db
-        db = FAISS.load_local(db_path, embeddings)
+    if os.path.exists(db_path):
+        # delete db
+        os.remove(db_path)
+
+    # create db
+    db = FAISS.from_documents(docs, embeddings)
+    # save db
+    db.save_local(db_path)
+
+
+def get_store(repo_names):
+    embeddings = OpenAIEmbeddings()
+
+    repo_names = repo_names.split(",")
+
+    db_array = []
+
+    # load all dbs
+    for repo_name in repo_names:
+        db_path = f"faiss_index/{repo_name}"
+
+        if os.path.exists(f"faiss_index/{repo_name}"):
+            db = FAISS.load_local(db_path, embeddings)
+            db_array.append(db)
+
+    if len(db_array) == 0:
+        raise ValueError("No db found for the given repo names.")
+
+    # merge all dbs to the first one
+    db = db_array[0]
+    for i in range(1, len(db_array)):
+        db.merge_from(db_array[i])
 
     return db
 
