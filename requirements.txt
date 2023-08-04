@@ -1,0 +1,7 @@
+langchain
+openai
+pathspec
+python-dotenv
+streamlit
+tiktoken
+faiss-cpu
