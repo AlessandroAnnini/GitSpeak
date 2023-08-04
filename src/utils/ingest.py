@@ -67,9 +67,9 @@ def split_docs(docs):
     return text_splitter.split_documents(docs)
 
 
-def process(repo_url, include_file_extensions, repo_name):
+def ingest(repo_url, include_file_extensions, repo_name):
     """
-    Process a git repository by cloning it, filtering files, splitting documents,
+    Ingest a git repository by cloning it, filtering files, splitting documents,
     creating embeddings, and storing everything in a FAISS index.
     """
     local_path = f"repos/{repo_name}"

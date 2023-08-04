@@ -2,7 +2,7 @@ import argparse
 import sys
 from dotenv import load_dotenv
 from streamlit.web import cli as stcli
-from utils.process import process
+from utils.ingest import ingest
 
 # Load environment variables from a .env file (containing OPENAI_API_KEY)
 load_dotenv()
@@ -14,14 +14,14 @@ def extract_repo_name(repo_url):
     return repo_name
 
 
-def process_repo(args):
+def ingest_repo(args):
     """
-    Process the git repository by cloning it, filtering files, and
+    Ingest the git repository by cloning it, filtering files, and
     creating a FAISS index.
     """
     repo_name = extract_repo_name(args.repo_url)
 
-    process(
+    ingest(
         args.repo_url,
         args.include_file_extensions,
         repo_name,
@@ -50,17 +50,17 @@ def main():
     subparsers = parser.add_subparsers(dest="command")
 
     ########################################
-    # Process subcommands
+    # Ingest subcommands
 
-    process_parser = subparsers.add_parser("process", help="Process a git repository")
+    ingest_parser = subparsers.add_parser("ingest", help="Ingest a git repository")
 
-    process_parser.add_argument(
+    ingest_parser.add_argument(
         "--repo-url",
         required=True,
-        help="The url of the git repository to process",
+        help="The url of the git repository to ingest",
     )
 
-    process_parser.add_argument(
+    ingest_parser.add_argument(
         "--include-file-extensions",
         nargs="+",
         default=None,
@@ -78,37 +78,18 @@ def main():
     chat_parser.add_argument(
         "--repo-name",
         required=True,
-        help="One or more comma-separated already processed repository names to chat with",
+        help="One or more comma-separated already ingested repository names to chat with",
     )
 
     ########################################
 
     args = parser.parse_args()
 
-    if args.command == "process":
-        process_repo(args)
+    if args.command == "ingest":
+        ingest_repo(args)
     elif args.command == "chat":
         chat(args)
 
 
 if __name__ == "__main__":
     main()
-
-## Example usage:
-"""
-```bash
-python3 main.py process --repo-url <repo_url> --include-file-extensions .py .js .ts .html .css .md .txt
-```
-
-python3 src/main.py process --repo-url https://github.com/hyperledger/hyperledger-hip --include-file-extensions .md
-
-
-Then to chat with the repository:
-
-```bash
-python3 main.py chat --repo-name <repo_name>
-```
-
-python3 main.py chat --repo-name hyperledger-hip
-
-"""
