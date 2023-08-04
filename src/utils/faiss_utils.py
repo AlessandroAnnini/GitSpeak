@@ -14,11 +14,15 @@ def create_store(repo_name, docs):
 
     if os.path.exists(db_path):
         # delete db
+        print(f"Found existing db at {db_path}, deleting...")
         os.remove(db_path)
 
     # create db
+    print("Creating db...")
     db = FAISS.from_documents(docs, embeddings)
+
     # save db
+    print(f"Saving db at {db_path}...")
     db.save_local(db_path)
 
 
@@ -33,7 +37,8 @@ def get_store(repo_names):
     for repo_name in repo_names:
         db_path = f"faiss_index/{repo_name}"
 
-        if os.path.exists(f"faiss_index/{repo_name}"):
+        if os.path.exists(db_path):
+            print(f"Found existing db for {repo_name}, loading...")
             db = FAISS.load_local(db_path, embeddings)
             db_array.append(db)
 
@@ -103,7 +108,7 @@ def search_db(db, query):
     qa = RetrievalQA.from_chain_type(
         llm=model,
         retriever=retriever,
-        verbose=True,
+        # verbose=True,
         chain_type_kwargs={
             "verbose": True,
             "prompt": prompt,

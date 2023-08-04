@@ -78,6 +78,7 @@ def ingest(repo_url, include_file_extensions, repo_name):
 
     docs = load_docs(local_path, include_file_extensions)
     print(f"Loaded {len(docs)} documents")
+
     docs = split_docs(docs)
     print(f"Split into {len(docs)} chunks")
 
