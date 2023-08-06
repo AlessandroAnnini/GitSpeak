@@ -1,3 +1,4 @@
+import os
 import argparse
 import sys
 from dotenv import load_dotenv
@@ -8,22 +9,17 @@ from utils.ingest import ingest
 load_dotenv()
 
 
-def extract_repo_name(repo_url):
-    """Extract the repository name from the given repository URL."""
-    repo_name = repo_url.split("/")[-1].replace(".git", "")
-    return repo_name
-
-
 def ingest_repo(args):
+    print(args)
     """
     Ingest the git repository by cloning it, filtering files, and
     creating a FAISS index.
     """
-    repo_name = extract_repo_name(args.repo_url)
+    repo_name = args.repo_url.split("/")[-1].replace(".git", "")
 
     ingest(
         args.repo_url,
-        args.include_file_extensions,
+        args.exts,
         repo_name,
     )
 
@@ -32,7 +28,6 @@ def chat(args):
     """
     Start the Streamlit chat application using the specified FAISS index.
     """
-
     sys.argv = [
         "streamlit",
         "run",
@@ -42,6 +37,15 @@ def chat(args):
     ]
 
     sys.exit(stcli.main())
+
+
+def list_repos():
+    """
+    List all the repos that have been ingested.
+    """
+    print("list of repos")
+    for repo in os.listdir("repos"):
+        print(f" - {repo}")
 
 
 def main():
@@ -61,12 +65,12 @@ def main():
     )
 
     ingest_parser.add_argument(
-        "--include-file-extensions",
+        "--exts",
         nargs="+",
         default=None,
         help=(
             "Exclude all files not matching these extensions. Example:"
-            " --include-file-extensions .py .js .ts .html .css .md .txt"
+            " --exts .py .js .ts .html .css .md .txt"
         ),
     )
 
@@ -78,8 +82,14 @@ def main():
     chat_parser.add_argument(
         "--repo-name",
         required=True,
-        help="One or more comma-separated already ingested repository names to chat with",
+        nargs="+",
+        help="One or more already ingested repository names to chat with",
     )
+
+    ########################################
+    # List subcommands
+
+    subparsers.add_parser("list", help="List all ingested repositories")
 
     ########################################
 
@@ -89,6 +99,8 @@ def main():
         ingest_repo(args)
     elif args.command == "chat":
         chat(args)
+    elif args.command == "list":
+        list_repos()
 
 
 if __name__ == "__main__":

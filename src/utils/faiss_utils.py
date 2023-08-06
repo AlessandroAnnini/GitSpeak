@@ -1,10 +1,10 @@
 import os
-from langchain.chains import RetrievalQA
+from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.memory import ConversationBufferWindowMemory
-from langchain import PromptTemplate
+
+chat_history = []
 
 
 def create_store(repo_name, docs):
@@ -13,32 +13,31 @@ def create_store(repo_name, docs):
     db_path = f"faiss_index/{repo_name}"
 
     if os.path.exists(db_path):
-        # delete db
-        print(f"Found existing db at {db_path}, deleting...")
-        os.remove(db_path)
+        # delete db directory
+        print(f"Found existing vector db at {db_path}, deleting...")
+        os.system(f"rm -rf {db_path}")
 
     # create db
-    print("Creating db...")
+    print("Creating vector db...")
     db = FAISS.from_documents(docs, embeddings)
 
     # save db
-    print(f"Saving db at {db_path}...")
+    print(f"Saving vector db at {db_path}...")
     db.save_local(db_path)
 
 
 def get_store(repo_names):
     embeddings = OpenAIEmbeddings()
 
-    repo_names = repo_names.split(",")
-
     db_array = []
 
     # load all dbs
     for repo_name in repo_names:
+        print(f"Loading vector db for {repo_name}...")
         db_path = f"faiss_index/{repo_name}"
 
         if os.path.exists(db_path):
-            print(f"Found existing db for {repo_name}, loading...")
+            print(f"Found existing vector db for {repo_name}, loading...")
             db = FAISS.load_local(db_path, embeddings)
             db_array.append(db)
 
@@ -53,34 +52,6 @@ def get_store(repo_names):
     return db
 
 
-template = """
-Use the following context (delimited by <CTX></CTX>) and the chat history (delimited by <HST></HST>) to answer the question,
-do not include the separator lines in your answer.
-------
-<CTX>
-{context}
-</CTX>
-------
-<HST>
-{history}
-</HST>
-------
-{question}
-Answer:
-"""
-
-prompt = PromptTemplate(
-    input_variables=["context", "history", "question"],
-    template=template,
-)
-
-memory = ConversationBufferWindowMemory(
-    k=2,
-    memory_key="history",
-    input_key="question",
-)
-
-
 def search_db(db, query):
     """Search for a response to the query in the DeepLake database."""
 
@@ -89,32 +60,21 @@ def search_db(db, query):
 
     # Set the search parameters for the retriever
     retriever.search_kwargs["distance_metric"] = "cos"
-    retriever.search_kwargs["fetch_k"] = 100
+    retriever.search_kwargs["fetch_k"] = 20
     retriever.search_kwargs["maximal_marginal_relevance"] = True
-    retriever.search_kwargs["k"] = 10
+    retriever.search_kwargs["k"] = 20
 
     # Create a ChatOpenAI model instance
     model = ChatOpenAI(model="gpt-3.5-turbo-16k")
 
-    # Create a RetrievalQA instance from the model and retriever
+    # Create a ConversationalRetrievalChain instance
+    qa = ConversationalRetrievalChain.from_llm(model, retriever=retriever)
 
-    # without memory
-    # qa = RetrievalQA.from_llm(
-    #     model,
-    #     retriever=retriever,
-    # )
+    # Query the database
+    result = qa({"question": query, "chat_history": chat_history})
 
-    # with memory
-    qa = RetrievalQA.from_chain_type(
-        llm=model,
-        retriever=retriever,
-        # verbose=True,
-        chain_type_kwargs={
-            "verbose": True,
-            "prompt": prompt,
-            "memory": memory,
-        },
-    )
+    # Add the query and result to the chat history
+    chat_history.append((query, result["answer"]))
 
     # Return the result of the query
-    return qa.run(query)
+    return result["answer"]

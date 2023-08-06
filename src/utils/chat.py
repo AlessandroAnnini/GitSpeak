@@ -7,11 +7,8 @@ from faiss_utils import get_store, search_db
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
-def run_chat_app(folder):
-    arguments = folder.split(",")
-    arguments = " + ".join(arguments)
-
-    st.title(f"{arguments} GPT")
+def run_chat_app(name, db):
+    st.title(f"{name} GPT")
     st.caption(
         """<a
             href="https://github.com/AlessandroAnnini/GitSpeak"
@@ -23,8 +20,6 @@ def run_chat_app(folder):
         unsafe_allow_html=True,
     )
 
-    db = get_store(folder)
-
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -35,7 +30,7 @@ def run_chat_app(folder):
             st.markdown(message["content"])
 
     # Accept user input
-    if prompt := st.chat_input(f"Ask me all about {arguments}"):
+    if prompt := st.chat_input(f"Ask me all about {name}"):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         # Display user message in chat message container
@@ -63,4 +58,12 @@ if __name__ == "__main__":
     parser.add_argument("--folder", type=str, required=True)
     args = parser.parse_args()
 
-    run_chat_app(args.folder)
+    # transform folders from string to list
+    folders = args.folder.replace("[", "").replace("]", "").replace("'", "").split(", ")
+
+    name = " + ".join(folders)
+
+    db = get_store(folders)
+
+    print(f"Running chat app for {folders}...")
+    run_chat_app(name, db)
