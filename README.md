@@ -1,5 +1,23 @@
 # GitSpeak
 
+GitSpeak is a chat application that allows you to interact with a chatbot using a context-aware data splitted dataset generated from Git repositories. It provides a conversational interface where you can ask questions about the repositories and get relevant answers.
+
+## Use cases
+
+GitSpeak has several use cases, including:
+
+1. **Code Documentation:** GitSpeak can be used to automatically generate documentation for code repositories. It can extract information from code comments, commit messages, and other code-related artifacts to create comprehensive documentation.
+
+2. **Code Search:** GitSpeak enables powerful code search capabilities. It allows users to search for specific code snippets, functions, or classes within a repository, making it easier to find and reuse code.
+
+3. **Knowledge Discovery:** GitSpeak can help researchers and developers discover knowledge within code repositories. By analyzing the codebase, it can identify patterns, best practices, and common pitfalls, providing valuable insights for software development.
+
+4. **Code Understanding:** GitSpeak aids in understanding codebases by providing contextual information. It can generate summaries, explanations, and examples for code artifacts, making it easier for developers to navigate and comprehend complex codebases.
+
+5. **Code Recommendation:** GitSpeak can suggest code improvements and optimizations based on analyzing existing code. It can identify areas for refactoring, performance enhancements, and bug fixes, helping developers write better code.
+
+These are just a few examples of the use cases for GitSpeak. Its capabilities extend beyond this list, making it a versatile tool for code analysis and understanding.
+
 ## Setup
 
 1. Clone the repository
