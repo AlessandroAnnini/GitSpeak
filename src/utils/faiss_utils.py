@@ -3,6 +3,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
+from pprint import pprint
 
 chat_history = []
 
@@ -53,25 +54,24 @@ def get_store(repo_names):
 
 
 def search_db(db, query):
-    """Search for a response to the query in the DeepLake database."""
+    """Search for a response to the query in the FAISS database."""
 
-    # Create a retriever from the DeepLake instance
-    retriever = db.as_retriever()
-
-    # Set the search parameters for the retriever
-    retriever.search_kwargs["distance_metric"] = "cos"
-    retriever.search_kwargs["fetch_k"] = 20
-    retriever.search_kwargs["maximal_marginal_relevance"] = True
-    retriever.search_kwargs["k"] = 20
+    # Create a retriever from the FAISS instance
+    retriever = db.as_retriever(
+        search_type="mmr", search_kwargs={"k": 6, "fetch_k": 30}
+    )
 
     # Create a ChatOpenAI model instance
     model = ChatOpenAI(model="gpt-3.5-turbo-16k")
 
     # Create a ConversationalRetrievalChain instance
-    qa = ConversationalRetrievalChain.from_llm(model, retriever=retriever)
+    qa = ConversationalRetrievalChain.from_llm(
+        model, retriever=retriever, return_source_documents=False
+    )
 
     # Query the database
     result = qa({"question": query, "chat_history": chat_history})
+    # pprint(result)
 
     # Add the query and result to the chat history
     chat_history.append((query, result["answer"]))

@@ -122,6 +122,7 @@ def load_docs(root_dir, file_extensions=None):
     Ignore dotfiles, dot directories, and files that match .gitignore rules.
     Optionally filter by file extensions.
     """
+
     docs = []
 
     # Load .gitignore rules
