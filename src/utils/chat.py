@@ -2,12 +2,12 @@ import os
 import argparse
 import openai
 import streamlit as st
-from faiss_utils import get_store, search_db
+from faiss_utils import get_store, create_chain, search_db
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
-def run_chat_app(name, db):
+def run_chat_app(name, chain):
     st.title(f"{name} GPT")
     st.caption(
         """<a
@@ -42,7 +42,10 @@ def run_chat_app(name, db):
             message_placeholder = st.empty()
             full_response = ""
 
-            for response in search_db(db, prompt):
+            # Return the answer from the database
+            answer = search_db(prompt, chain)
+
+            for response in answer:
                 full_response += response
                 message_placeholder.markdown(full_response + "▌")
 
@@ -64,6 +67,7 @@ if __name__ == "__main__":
     name = " + ".join(folders)
 
     db = get_store(folders)
+    chain = create_chain(db)
 
     print(f"Running chat app for {folders}...")
-    run_chat_app(name, db)
+    run_chat_app(name, chain)

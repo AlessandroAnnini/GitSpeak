@@ -1,4 +1,5 @@
 import os
+from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -53,24 +54,31 @@ def get_store(repo_names):
     return db
 
 
-def search_db(db, query):
-    """Search for a response to the query in the FAISS database."""
+def create_chain(db):
+    # Create a ChatOpenAI model instance
+    llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0.3)
 
     # Create a retriever from the FAISS instance
     retriever = db.as_retriever(
         search_type="mmr", search_kwargs={"k": 6, "fetch_k": 30}
     )
 
-    # Create a ChatOpenAI model instance
-    model = ChatOpenAI(model="gpt-3.5-turbo-16k")
-
     # Create a ConversationalRetrievalChain instance
-    qa = ConversationalRetrievalChain.from_llm(
-        model, retriever=retriever, return_source_documents=False
+    chain = ConversationalRetrievalChain.from_llm(
+        llm,
+        retriever,
+        return_source_documents=False,
+        return_generated_question=False,
     )
 
+    return chain
+
+
+def search_db(query, chain):
+    """Search for a response to the query in the FAISS database."""
+
     # Query the database
-    result = qa({"question": query, "chat_history": chat_history})
+    result = chain({"question": query, "chat_history": chat_history})
     # pprint(result)
 
     # Add the query and result to the chat history
