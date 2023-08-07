@@ -83,7 +83,7 @@ def dynamic_load_and_split_docs(file_path):
     elif language:
         """Code"""
         code_splitter = RecursiveCharacterTextSplitter.from_language(
-            language=language, chunk_size=80, chunk_overlap=0
+            language=language, chunk_size=2000, chunk_overlap=600
         )
         code = open(file_path, "r").read()
         docs = code_splitter.create_documents([code])
@@ -97,7 +97,7 @@ def dynamic_load_and_split_docs(file_path):
         """CSV"""
         loader = CSVLoader(file_path)
         data = loader.load()
-        csv_splitter = CharacterTextSplitter(chunk_size=80, chunk_overlap=0)
+        csv_splitter = CharacterTextSplitter(chunk_size=8000, chunk_overlap=0)
         docs = csv_splitter.split_documents(data)
         print(f"Split CSV into {len(docs)} chunks")
     # elif file_extension == "json":
