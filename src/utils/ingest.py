@@ -164,11 +164,13 @@ def load_docs(root_dir, file_extensions=None):
     return docs
 
 
-def ingest(repo_url, include_file_extensions, repo_name):
+def ingest(repo_url, include_file_extensions):
     """
     Ingest a git repository by cloning it, filtering files, splitting documents,
     creating embeddings, and storing everything in a FAISS index.
     """
+
+    repo_name = repo_url.split("/")[-1].replace(".git", "")
 
     local_path = f"repos/{repo_name}"
 
