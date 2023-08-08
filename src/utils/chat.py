@@ -50,17 +50,14 @@ def run_chat_app(name, chain):
                 message_placeholder.markdown(full_response + "▌")
 
             message_placeholder.markdown(full_response)
+
         # Add assistant response to chat history
         st.session_state.messages.append(
             {"role": "assistant", "content": full_response}
         )
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--folder", type=str, required=True)
-    args = parser.parse_args()
-
+def main(args):
     # transform folders from string to list
     folders = args.folder.replace("[", "").replace("]", "").replace("'", "").split(", ")
 
@@ -71,3 +68,14 @@ if __name__ == "__main__":
 
     print(f"Running chat app for {folders}...")
     run_chat_app(name, chain)
+
+
+if __name__ == "__main__":
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--folder", type=str, required=True)
+        args = parser.parse_args()
+        main(args)
+    except Exception as e:
+        st.write("Fatal Error!")
+        st.write(e)
