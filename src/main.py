@@ -1,6 +1,6 @@
 import os
-import argparse
 import sys
+import argparse
 from dotenv import load_dotenv
 from streamlit.web import cli as stcli
 from utils.ingest import ingest
@@ -10,18 +10,12 @@ load_dotenv()
 
 
 def ingest_repo(args):
-    print(args)
     """
     Ingest the git repository by cloning it, filtering files, and
     creating a FAISS index.
     """
-    repo_name = args.repo_url.split("/")[-1].replace(".git", "")
 
-    ingest(
-        args.repo_url,
-        args.exts,
-        repo_name,
-    )
+    ingest(args.repo_url, args.exts)
 
 
 def chat(args):
@@ -43,8 +37,9 @@ def list_repos():
     """
     List all the repos that have been ingested.
     """
-    print("list of repos")
-    for repo in os.listdir("repos"):
+    print("List of available repos:")
+    repos = sorted(os.listdir("repos"))
+    for repo in repos:
         print(f" - {repo}")
 
 
