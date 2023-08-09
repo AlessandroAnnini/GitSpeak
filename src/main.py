@@ -22,12 +22,15 @@ def chat(args):
     """
     Start the Streamlit chat application using the specified FAISS index.
     """
+    model = args.model_name if args.model_name else "gpt-3.5-turbo"
+
     sys.argv = [
         "streamlit",
         "run",
         "src/utils/chat.py",
         "--",
         f"--folder={args.repo_name}",
+        f"--model={model}",
     ]
 
     sys.exit(stcli.main())
@@ -73,6 +76,11 @@ def main():
     # Chat subcommands
 
     chat_parser = subparsers.add_parser("chat", help="Start the chat application")
+
+    chat_parser.add_argument(
+        "--model-name",
+        help="The name of the model to use for chat. gpt-3.5-turbo or gpt-4",
+    )
 
     chat_parser.add_argument(
         "--repo-name",

@@ -64,7 +64,7 @@ def main(args):
     name = " + ".join(folders)
 
     db = get_store(folders)
-    chain = create_chain(db)
+    chain = create_chain(db, args.model)
 
     print(f"Running chat app for {folders}...")
     run_chat_app(name, chain)
@@ -73,6 +73,7 @@ def main(args):
 if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser()
+        parser.add_argument("--model", type=str)
         parser.add_argument("--folder", type=str, required=True)
         args = parser.parse_args()
         main(args)

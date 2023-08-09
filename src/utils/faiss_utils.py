@@ -1,10 +1,10 @@
 import os
-from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from pprint import pprint
+
+# from pprint import pprint
 
 chat_history = []
 
@@ -54,9 +54,10 @@ def get_store(repo_names):
     return db
 
 
-def create_chain(db):
+def create_chain(db, model="gpt-3.5-turbo"):
+    print(f"model: {model}")
     # Create a ChatOpenAI model instance
-    llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0.3)
+    llm = ChatOpenAI(model=model, temperature=0.3)
 
     # Create a retriever from the FAISS instance
     retriever = db.as_retriever(

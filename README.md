@@ -76,6 +76,12 @@ You can load multiple repositories by specifying multiple repo names:
 python src/main.py chat --repo-name <repo_name> <repo_name2> <repo_name3>
 ```
 
+Optionally you can choose to use a different openai model by specifying the `--model-name` option. Default is `gpt-3.5-turbo`:
+
+```bash
+python src/main.py chat --repo-name <repo_name> --model-name gpt-4
+```
+
 The Streamlit chat app will run, and you can interact with the chatbot at `http://localhost:8501` (or the next available port) to ask questions about the repository.
 
 ### List
